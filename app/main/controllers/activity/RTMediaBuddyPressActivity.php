@@ -73,24 +73,19 @@ class RTMediaBuddyPressActivity {
             wp_delete_comment($comment_id , true);
         }
     }
-    function comment_sync ( $comment_id, $param ) {
+   
+   function comment_sync ( $comment_id, $param ) {
 
-        // comment_id 40
-        // Array( [id] => [content] => testing [user_id] => 1 [activity_id] => 26 [parent_id] => 26)
-
-//        $activity = new BP_Activity_Activity ( $param[ 'activity_id' ] );
-//        if ( $activity->type == 'rtmedia_update' ) {
-//            $media_id = $activity->item_id;
-//            $comment = new RTMediaComment();
-//            $comment->add ( array( 'comment_content' => $param[ 'content' ], 'comment_post_ID' => $media_id ) );
-//        }
-	$mediamodel = new RTMediaModel();
-	$media = $mediamodel->get(array('activity_id' => $param[ 'activity_id' ]));
+        extract($param);
+        $user = get_user_by('id', $user_id);
+        $comment_author = $user->data->user_login;
+       	$mediamodel = new RTMediaModel();
+	$media = $mediamodel->get(array('activity_id' => $activity_id ));
 	// if there is only single media in activity
 	if(sizeof($media) == 1 && isset($media[0]->media_id)) {
 	    $media_id = $media[0]->media_id;
 	    $comment = new RTMediaComment();
-            $id = $comment->add ( array( 'comment_content' => $param[ 'content' ], 'comment_post_ID' => $media_id ) );
+            $id = $comment->add ( array( 'comment_content' => $content, 'comment_post_ID' => $media_id, 'comment_author' => $comment_author, 'user_id'  => $user_id ) );
             update_comment_meta($id, 'activity_id', $comment_id);
 	}
     }
